@@ -1,0 +1,13 @@
+market_price = close
+prev_market_price = close[1]
+market_trend = sma(market_price, 5)
+if market_price > prev_market_price
+    if market_trend > 0
+        if strategy.position_size > 0
+            strategy.close("Close long")
+            strategy.entry("Sell", strategy.short)
+else
+    if market_trend < 0
+        if strategy.position_size < 0
+            strategy.close("Close short")
+            strategy.entry("Buy", strategy.long)
