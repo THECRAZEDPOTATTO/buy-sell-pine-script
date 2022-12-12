@@ -1,13 +1,34 @@
 market_price = close
+
+// Get the previous market price
 prev_market_price = close[1]
+
+// Get the current market trend
 market_trend = sma(market_price, 5)
+
+// Set the stop loss level
+stop_loss = 10
+
+// Check if the market is up or down
 if market_price > prev_market_price
+    // Sell if the market is up and the market trend is positive
     if market_trend > 0
+        // Check if we have a long position
         if strategy.position_size > 0
+            // Close the long position and open a short position
             strategy.close("Close long")
-            strategy.entry("Sell", strategy.short)
+            strategy.entry("Sell", strategy.short, stop=strategy.position_avg_price - stop_loss)
 else
+    // Buy if the market is down and the market trend is negative
     if market_trend < 0
+        // Check if we have a short position
         if strategy.position_size < 0
+            // Close the short position and open a long position
             strategy.close("Close short")
-            strategy.entry("Buy", strategy.long)
+            strategy.entry("Buy", strategy.long, stop=strategy.position_avg_price + stop_loss)
+    // Detect downward trends
+    else
+        // Check if the market trend is starting to turn negative
+        if market_trend < market_trend[1]
+            // Sell if the market trend is turning negative
+            strategy.entry("Sell", strategy.short, stop=market_price - stop_loss)
